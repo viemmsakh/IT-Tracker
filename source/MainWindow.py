@@ -11,9 +11,19 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
 	def setupUi(self, MainWindow):
 		MainWindow.setObjectName("MainWindow")
-		MainWindow.resize(530, 175)
-		MainWindow.setMinimumSize(QtCore.QSize(530, 175))
-		MainWindow.setMaximumSize(QtCore.QSize(530, 175))
+		MainWindow.resize(530, 180)
+		MainWindow.setMinimumSize(QtCore.QSize(530, 180))
+		MainWindow.setMaximumSize(QtCore.QSize(530, 180))
+		
+		# Menubar
+		self.menubar = QtWidgets.QMenuBar(MainWindow)
+		self.menubar.setGeometry(QtCore.QRect(0, 0, 530, 21))
+		self.menubar.setObjectName("menubar")
+		self.actionCleanQuit = QtWidgets.QAction(MainWindow)
+		self.actionCleanQuit.setObjectName("actionCleanQuit")
+		self.menubar.addAction(self.actionCleanQuit)
+		
+
 		font = QtGui.QFont()
 		font.setFamily("Courier")
 		MainWindow.setFont(font)
@@ -21,12 +31,12 @@ class Ui_MainWindow(object):
 		
 		# Location Dropdown
 		self.comboOffice = QtWidgets.QComboBox(MainWindow)
-		self.comboOffice.setGeometry(QtCore.QRect(170, 10, 350, 27))
+		self.comboOffice.setGeometry(QtCore.QRect(170, 27, 350, 27))
 		self.comboOffice.setObjectName("comboOffice")
 		
 		# Locator Table
 		self.tableLocator = QtWidgets.QTableWidget(MainWindow)
-		self.tableLocator.setGeometry(QtCore.QRect(10, 50, 510, 114))
+		self.tableLocator.setGeometry(QtCore.QRect(10, 60, 510, 114))
 		self.tableLocator.setObjectName("tableLocator")
 		self.tableLocator.setColumnCount(3)
 		self.tableLocator.setRowCount(3)
@@ -68,7 +78,7 @@ class Ui_MainWindow(object):
 		
 		# Username Textarea
 		self.textUsername = QtWidgets.QTextEdit(MainWindow)
-		self.textUsername.setGeometry(QtCore.QRect(10, 10, 141, 27))
+		self.textUsername.setGeometry(QtCore.QRect(10, 27, 141, 27))
 		font = QtGui.QFont()
 		font.setFamily("Courier")
 		font.setPointSize(12)
@@ -95,6 +105,7 @@ class Ui_MainWindow(object):
 		item = self.tableLocator.horizontalHeaderItem(2)
 		item.setText(_translate("MainWindow", "Duration"))
 		self.textUsername.setHtml(_translate("MainWindow", ""))
+		self.actionCleanQuit.setText(_translate("MainWindow", "Quit"))
 
 
 if __name__ == "__main__":

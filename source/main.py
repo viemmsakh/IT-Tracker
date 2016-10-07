@@ -43,15 +43,15 @@ class MainWindow(Ui_MainWindow):
 		# Connect dropdown change to update_db
 		self.comboOffice.currentIndexChanged.connect(self.update_db)
 		
-	def closeEvent(self,event):
-		result = QtGui.QMessageBox.question(self,
-			"Confirm Exit...",
-			"Are you sure you want to exit ?",
-			QtGui.QMessageBox.Yes| QtGui.QMessageBox.No)
-		event.ignore()
-
-		if result == QtGui.QMessageBox.Yes:
-			event.accept()
+		# Connect quit in menubar to clean_quit
+		self.actionCleanQuit.triggered.connect(self.clean_quit)
+		
+	def clean_quit(self):
+		c.execute("""DELETE FROM tracker WHERE username = ?""", (self.username,))
+		conn.commit()
+		c.close()
+		conn.close()
+		quit()
 	
 	def update_db(self):
 		ts = time.time()
@@ -160,7 +160,7 @@ if __name__ == '__main__':
 	app = QtWidgets.QApplication(sys.argv)
 
 	widget_MainWindow = QtWidgets.QMainWindow()
-	#widget_MainWindow.setWindowFlags(QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowCloseButtonHint)
+	widget_MainWindow.setWindowFlags(QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMinimizeButtonHint)
 	app_MainWindow = MainWindow(widget_MainWindow)
 	
 	widget_MainWindow.show()
