@@ -1,16 +1,17 @@
 # Imports
+
+import datetime, time
+import math
+import os
+import sqlite3
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from MainWindow import Ui_MainWindow
-import os
-import sqlite3
-import datetime
-import time
-import math
 
-# https://github.com/sqlitebrowser/sqlitebrowser/releases
+# Use this for browsing database: https://github.com/sqlitebrowser/sqlitebrowser/releases
 
 class MainWindow(Ui_MainWindow):
 	def __init__(self, app_MainWindow):
@@ -30,14 +31,38 @@ class MainWindow(Ui_MainWindow):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Courier\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\';\">" + self.username + "</span></p></body></html>"))
+		
+		# Populate table before 1 second
 		self.update_db()
-		# Update DB/form
+		
+		# Update DB/form on 1 second timer
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.update_db)
 		self.timer.start(1000)
+		
+		# Connect dropdown change to update_db
+		self.comboOffice.currentIndexChanged.connect(self.update_db)
+		
+	def closeEvent(self,event):
+		result = QtGui.QMessageBox.question(self,
+			"Confirm Exit...",
+			"Are you sure you want to exit ?",
+			QtGui.QMessageBox.Yes| QtGui.QMessageBox.No)
+		event.ignore()
+
+		if result == QtGui.QMessageBox.Yes:
+			event.accept()
 	
 	def update_db(self):
 		ts = time.time()
+		# Update Location dropdown
+		# This isn't necessary after first load. And most
+		# likey new locations will not be added; however,
+		# if the sqlite db is updated with more locations,
+		# the locations will auto-populate.
+		# Also, it would probably be better to just use
+		# configparser to store the locations.
+		
 		c.execute("""SELECT * from locations""")
 		locations = c.fetchall()
 		for row in locations:
@@ -52,7 +77,7 @@ class MainWindow(Ui_MainWindow):
 		else:
 			if not self.location == check[1]:
 				# Self.Location is different than what is in the db
-				c.execute("""UPDATE tracker SET location = ?,  ts = ?""", (self.location, ts))
+				c.execute("""UPDATE tracker SET location = ?,  ts = ? WHERE username = ?""", (self.location, ts, self.username))
 		conn.commit()
 
 		c.execute("""SELECT * from tracker""")
@@ -80,7 +105,7 @@ class MainWindow(Ui_MainWindow):
 			item.setFont(self.font)
 			item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter)
 			self.tableLocator.setItem(i, 2, item)
-			
+			i += 1
 
 		
 if __name__ == '__main__':
@@ -135,7 +160,7 @@ if __name__ == '__main__':
 	app = QtWidgets.QApplication(sys.argv)
 
 	widget_MainWindow = QtWidgets.QMainWindow()
-	widget_MainWindow.setWindowFlags(QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowCloseButtonHint)
+	#widget_MainWindow.setWindowFlags(QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowCloseButtonHint)
 	app_MainWindow = MainWindow(widget_MainWindow)
 	
 	widget_MainWindow.show()
